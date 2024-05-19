@@ -1,5 +1,9 @@
 # asiomp 简介
+
 [![License](https://img.shields.io/npm/l/mithril.svg)](https://github.com/xukeawsl/asiomp/blob/master/LICENSE)
+
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/23ca8b88cf7f4fe2bc3a4e870d5f795f)](https://app.codacy.com/gh/xukeawsl/asiomp/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+
 [![Build status](https://ci.appveyor.com/api/projects/status/5epf5t4t8c1wqax4?svg=true)](https://ci.appveyor.com/project/xukeawsl/asiomp)
 
 asiomp 能够帮助你构建基于 c++ asio 的多进程 tcp 服务器
