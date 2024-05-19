@@ -71,7 +71,8 @@ void asiomp_server::init() {
 }
 
 void asiomp_server::set_proctitle(const std::string& title) {
-    strcpy(this->os_argv[0], ("asiomp: " + title).c_str());
+    std::string proctitle = "asiomp: " + title;
+    strncpy(this->os_argv[0], proctitle.c_str(), proctitle.size() + 1);
 }
 
 void asiomp_server::set_logger(const std::string& logger_name) {
