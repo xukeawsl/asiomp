@@ -15,9 +15,9 @@
 
 class asiomp_server {
 public:
-    asiomp_server(const std::string& host, uint16_t port);
+    asiomp_server(char **argv, const std::string& host, uint16_t port);
 
-    asiomp_server(const std::string& host, uint16_t port, uint32_t worker_num);
+    asiomp_server(char **argv, const std::string& host, uint16_t port, uint32_t worker_num);
 
     ~asiomp_server();
 
@@ -35,6 +35,8 @@ private:
     void stop_server();
 
     void init();
+
+    void set_proctitle(const std::string& title);
 
     void set_logger(const std::string& logger_name);
 
@@ -55,6 +57,8 @@ private:
     void reap_worker();
 
 private:
+    char **os_argv;
+
     asio::io_context io_context;
     asio::signal_set signals;
     asio::ip::tcp::acceptor acceptor;

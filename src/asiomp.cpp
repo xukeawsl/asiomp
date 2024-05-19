@@ -2,8 +2,10 @@
 
 #include "session.h"
 
-asiomp_server::asiomp_server(const std::string& host, uint16_t port)
-    : io_context(1),
+asiomp_server::asiomp_server(char** argv, const std::string& host,
+                             uint16_t port)
+    : os_argv(argv),
+      io_context(1),
       signals(io_context),
       acceptor(io_context),
       listen_endpoint(asio::ip::make_address(host), port),
@@ -11,9 +13,10 @@ asiomp_server::asiomp_server(const std::string& host, uint16_t port)
       isworker(false),
       terminate(false) {}
 
-asiomp_server::asiomp_server(const std::string& host, uint16_t port,
-                             uint32_t worker_num)
-    : io_context(1),
+asiomp_server::asiomp_server(char** argv, const std::string& host,
+                             uint16_t port, uint32_t worker_num)
+    : os_argv(argv),
+      io_context(1),
       signals(io_context),
       acceptor(io_context),
       listen_endpoint(asio::ip::make_address(host), port),
@@ -52,6 +55,7 @@ void asiomp_server::init() {
     ss << buffer;
     this->log_dir = "logs/" + ss.str() + "/";
 
+    this->set_proctitle("master process");
     this->set_logger("asiomp_master");
 
     this->signals.add(SIGINT);
@@ -64,6 +68,10 @@ void asiomp_server::init() {
     this->acceptor.set_option(asio::ip::tcp::acceptor::reuse_address(true));
     this->acceptor.bind(this->listen_endpoint);
     this->acceptor.listen();
+}
+
+void asiomp_server::set_proctitle(const std::string& title) {
+    strcpy(this->os_argv[0], ("asiomp: " + title).c_str());
 }
 
 void asiomp_server::set_logger(const std::string& logger_name) {
@@ -184,6 +192,7 @@ void asiomp_server::spawn_process(int respawn) {
         case 0: {
             this->io_context.notify_fork(asio::io_context::fork_child);
             this->isworker = true;
+            this->set_proctitle("worker process");
             this->set_logger("asiomp_worker");
             this->worker_process();
             break;
