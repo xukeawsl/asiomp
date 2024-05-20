@@ -2,9 +2,12 @@
 
 #include "session.h"
 
+extern char** environ;
+
 asiomp_server::asiomp_server(char** argv, const std::string& host,
                              uint16_t port)
     : os_argv(argv),
+      os_argv_last(argv[0]),
       io_context(1),
       signals(io_context),
       acceptor(io_context),
@@ -16,6 +19,7 @@ asiomp_server::asiomp_server(char** argv, const std::string& host,
 asiomp_server::asiomp_server(char** argv, const std::string& host,
                              uint16_t port, uint32_t worker_num)
     : os_argv(argv),
+      os_argv_last(argv[0]),
       io_context(1),
       signals(io_context),
       acceptor(io_context),
@@ -45,6 +49,9 @@ void asiomp_server::run() noexcept {
 void asiomp_server::stop_server() { this->io_context.stop(); }
 
 void asiomp_server::init() {
+    this->init_setproctitle();
+    this->set_proctitle("master process");
+
     auto now = std::chrono::system_clock::now();
     auto time = std::chrono::system_clock::to_time_t(now);
     std::stringstream ss;
@@ -55,7 +62,6 @@ void asiomp_server::init() {
     ss << buffer;
     this->log_dir = "logs/" + ss.str() + "/";
 
-    this->set_proctitle("master process");
     this->set_logger("asiomp_master");
 
     this->signals.add(SIGINT);
@@ -70,9 +76,54 @@ void asiomp_server::init() {
     this->acceptor.listen();
 }
 
+void asiomp_server::init_setproctitle() {
+    size_t size = 0;
+
+    for (int i = 0; environ[i]; i++) {
+        size += strlen(environ[i]) + 1;
+    }
+
+    this->os_environ.reset(new char[size]);
+
+    for (int i = 0; this->os_argv[i]; i++) {
+        if (this->os_argv_last == this->os_argv[i]) {
+            this->os_argv_last =
+                this->os_argv[i] + strlen(this->os_argv[i]) + 1;
+        }
+    }
+
+    char* p = this->os_environ.get();
+
+    for (int i = 0; environ[i]; i++) {
+        if (this->os_argv_last == environ[i]) {
+            size = strlen(environ[i]) + 1;
+            this->os_argv_last = environ[i] + size;
+
+            strncpy(p, environ[i], size);
+            environ[i] = p;
+
+            p += size;
+        }
+    }
+
+    this->os_argv_last--;
+}
+
 void asiomp_server::set_proctitle(const std::string& title) {
-    std::string proctitle = "asiomp: " + title;
-    strncpy(this->os_argv[0], proctitle.c_str(), proctitle.size() + 1);
+    this->os_argv[1] = nullptr;
+
+    strncpy(this->os_argv[0],
+            "asiomp: ", this->os_argv_last - this->os_argv[0]);
+
+    char* p = this->os_argv[0] + strlen("asiomp: ");
+
+    strncpy(p, title.c_str(), this->os_argv_last - p);
+
+    p += title.length();
+
+    if (this->os_argv_last - p) {
+        memset(p, '\0', this->os_argv_last - p);
+    }
 }
 
 void asiomp_server::set_logger(const std::string& logger_name) {

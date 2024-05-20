@@ -36,6 +36,8 @@ private:
 
     void init();
 
+    void init_setproctitle();
+
     void set_proctitle(const std::string& title);
 
     void set_logger(const std::string& logger_name);
@@ -58,6 +60,9 @@ private:
 
 private:
     char **os_argv;
+    char *os_argv_last;
+
+    std::shared_ptr<char[]> os_environ;
 
     asio::io_context io_context;
     asio::signal_set signals;
