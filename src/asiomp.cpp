@@ -9,7 +9,7 @@ static char* cpystrn(char* dst, const char* src, size_t n) {
         return dst;
     }
 
-    while (n--) {
+    while (--n) {
         *dst = *src;
         if (*dst == '\0') {
             return dst;
