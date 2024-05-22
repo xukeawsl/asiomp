@@ -4,6 +4,26 @@
 
 extern char** environ;
 
+static char* cpystrn(char* dst, const char* src, size_t n) {
+    if (n == 0) {
+        return dst;
+    }
+
+    while (n--) {
+        *dst = *src;
+        if (*dst == '\0') {
+            return dst;
+        }
+
+        dst++;
+        src++;
+    }
+
+    *dst = '\0';
+
+    return dst;
+}
+
 asiomp_server::asiomp_server(char** argv, const std::string& host,
                              uint16_t port)
     : os_argv(argv),
@@ -99,7 +119,7 @@ void asiomp_server::init_setproctitle() {
             size = strlen(environ[i]) + 1;
             this->os_argv_last = environ[i] + size;
 
-            strncpy(p, environ[i], size);
+            cpystrn(p, environ[i], size);
             environ[i] = p;
 
             p += size;
@@ -110,16 +130,14 @@ void asiomp_server::init_setproctitle() {
 }
 
 void asiomp_server::set_proctitle(const std::string& title) {
+    char* p = nullptr;
+
     this->os_argv[1] = nullptr;
 
-    strncpy(this->os_argv[0],
-            "asiomp: ", this->os_argv_last - this->os_argv[0]);
+    p = cpystrn(this->os_argv[0],
+                "asiomp: ", this->os_argv_last - this->os_argv[0]);
 
-    char* p = this->os_argv[0] + strlen("asiomp: ");
-
-    strncpy(p, title.c_str(), this->os_argv_last - p);
-
-    p += title.length();
+    p = cpystrn(p, title.c_str(), this->os_argv_last - p);
 
     if (this->os_argv_last - p) {
         memset(p, '\0', this->os_argv_last - p);
