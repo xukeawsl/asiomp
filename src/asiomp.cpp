@@ -134,9 +134,10 @@ void asiomp_server::set_proctitle(const std::string& title) {
 
     this->os_argv[1] = nullptr;
 
-    p = cpystrn(this->os_argv[0],
-                "asiomp: ", this->os_argv_last - this->os_argv[0]);
+    p = cpystrn(this->os_argv[0], ASIOMP_PROC_NAME,
+                this->os_argv_last - this->os_argv[0]);
 
+    p = cpystrn(p, ": ", this->os_argv_last - p);
     p = cpystrn(p, title.c_str(), this->os_argv_last - p);
 
     if (this->os_argv_last - p) {

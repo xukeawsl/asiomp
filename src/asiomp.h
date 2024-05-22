@@ -13,6 +13,10 @@
 #include "spdlog/sinks/rotating_file_sink.h"
 #include "spdlog/spdlog.h"
 
+#ifndef ASIOMP_PROC_NAME
+#define ASIOMP_PROC_NAME "asiomp"
+#endif
+
 class asiomp_server {
 public:
     asiomp_server(char **argv, const std::string& host, uint16_t port);
