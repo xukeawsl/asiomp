@@ -30,7 +30,7 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE
     ASIOMP_PROC_NAME="${PROJECT_NAME}"
 )
 
-target_link_libraries(${PROJECT_NAME} PUBLIC pthread)
+target_link_libraries(${PROJECT_NAME} PUBLIC pthread spdlog::spdlog)
 
 #
 # Clang-Format
