@@ -14,7 +14,7 @@ asiomp 能够帮助你构建基于 c++ asio 的多进程 tcp 服务器
 
 ## 特性
 
-* 高可用: 采用类似 `nginx` 的 `master-worker` 工作模式, 当 worker 进程挂掉后可以自动拉起来, 保证正常提供服务
+* 高可用: 采用类似 `nginx` 的 `master-worker` 工作模式, 当 worker 进程挂掉后可以自动拉起来, 保证正常提供服务, 支持守护进程模式工作
 
 * 高并发: 使用多进程能够很好的利用多核能力, 提高整体处理能力, 推荐可以在工作进程使用 asio 协程, 进一步提高 IO 处理的效率
 
@@ -50,8 +50,8 @@ void session::start() {
 #include "asiomp.h"
 
 int main(int argc, char *argv[]) {
-    // asiomp_server(argv, "127.0.0.1", 5555).run(); // 单进程模式
-    asiomp_server(argv, "127.0.0.1", 5555, 2).run();    // 多进程模式
+    // asiomp_server(argv, "127.0.0.1", 5555, false).run();    // 单进程模式
+    asiomp_server(argv, "127.0.0.1", 5555, 2, true).run();    // 多进程模式
     return 0;
 }
 ```
