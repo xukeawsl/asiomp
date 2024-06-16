@@ -20,12 +20,12 @@ include(cmake/settings.cmake)
 file(GLOB_RECURSE srcs ${PROJECT_SOURCE_DIR}/src/*.cpp)
 file(GLOB_RECURSE hrds ${PROJECT_SOURCE_DIR}/src/*.h)
 
-include_directories(
+add_library(${PROJECT_NAME} SHARED ${srcs})
+
+target_include_directories(${PROJECT_NAME} PUBLIC
     src
     third-party/asio/asio/include
 )
-
-add_library(${PROJECT_NAME} SHARED ${srcs})
 
 target_link_libraries(${PROJECT_NAME} PUBLIC pthread spdlog::spdlog)
 
