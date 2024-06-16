@@ -2,16 +2,18 @@
 
 #include "common.h"
 
-class session
-  : public std::enable_shared_from_this<session>
+class session : public std::enable_shared_from_this<session>
 {
 public:
-    explicit session(asio::ip::tcp::socket socket);
+    session() = default;
 
     virtual ~session() = default;
 
-    virtual void start();
+    virtual void start() {}
 
 protected:
-    asio::ip::tcp::socket socket_;
+    template<typename T>
+    std::shared_ptr<T> getDerivedSharedPtr() {
+        return std::dynamic_pointer_cast<T>(shared_from_this());
+    }
 };

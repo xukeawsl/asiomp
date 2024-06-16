@@ -6,7 +6,7 @@ session_factory* session_factory::getInstance() {
 }
 
 std::shared_ptr<session> session_factory::default_creator(asio::ip::tcp::socket socket) {
-    return std::make_shared<session>(std::move(socket));
+    return std::make_shared<session>();
 }
 
 void session_factory::register_session(const std::string& session_name, session_creator creator) {

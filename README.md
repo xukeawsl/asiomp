@@ -53,9 +53,28 @@ target_link_libraries(${PROJECT_NAME} PUBLIC asiomp)
 
 class your_session : public session {
 public:
-    explicit your_session(asio::ip::tcp::socket socket) : session(std::move(socket)) {
+    explicit your_session(asio::ip::tcp::socket socket) : socket_(std::move(socket)) {
         // 其它初始化操作
     }
+
+    void start() override {
+        // 注意如果使用 asio 的异步操作, 需要将智能指针提升
+        // 为 std::shared_ptr<your_session> 才行, 可以使用 session 中
+        // 定义的 getDerivedSharedPtr<your_session> 模板方法
+        auto self = getDeriveSharedPtr<your_session>();
+        self->handle_session();
+
+        // 如果不使用异步方法直接调用即可
+        // this->handle_session();
+    }
+
+private:
+    void handle_session() {
+        // 会话处理
+    }
+
+private:
+    asio::ip::tcp::socket socket_;
 };
 ```
 

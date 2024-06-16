@@ -1,12 +1,12 @@
 #pragma once
 
-#include "session.h"
+#include "asiomp.h"
 
 class echo_session
   : public session
 {
 public:
-    echo_session(asio::ip::tcp::socket socket);
+    explicit echo_session(asio::ip::tcp::socket socket);
 
     ~echo_session();
 
@@ -19,4 +19,6 @@ private:
 
     enum { max_length = 1024 };
     char data_[max_length];
+
+    asio::ip::tcp::socket socket_;
 };
