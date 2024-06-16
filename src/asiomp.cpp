@@ -52,7 +52,11 @@ asiomp_server::asiomp_server(char** argv, const std::string& host,
       isdaemon(daemon),
       session_name(name),
       processes(worker_num)
-{}
+{
+    if (worker_num == 0) {
+        processes.resize(std::thread::hardware_concurrency());
+    }
+}
 
 asiomp_server::~asiomp_server() { spdlog::shutdown(); }
 
