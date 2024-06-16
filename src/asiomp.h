@@ -1,17 +1,7 @@
 #pragma once
 
-#include <string>
-#include <memory>
-
-#include <unistd.h>
-#include <sys/wait.h>
-
-#include "asio.hpp"
-
-#include "spdlog/async.h"
-#include "spdlog/sinks/basic_file_sink.h"
-#include "spdlog/sinks/rotating_file_sink.h"
-#include "spdlog/spdlog.h"
+#include "common.h"
+#include "session_factory.h"
 
 #ifndef ASIOMP_PROC_NAME
 #define ASIOMP_PROC_NAME "asiomp"
@@ -19,9 +9,9 @@
 
 class asiomp_server {
 public:
-    asiomp_server(char **argv, const std::string& host, uint16_t port, bool daemon);
+    asiomp_server(char **argv, const std::string& host, uint16_t port, bool daemon, const std::string& session);
 
-    asiomp_server(char **argv, const std::string& host, uint16_t port, uint32_t worker_num, bool deamon);
+    asiomp_server(char **argv, const std::string& host, uint16_t port, uint32_t worker_num, bool deamon, const std::string& session);
 
     ~asiomp_server();
 
@@ -79,6 +69,7 @@ private:
     bool isworker;
     bool terminate;
     bool isdaemon;
+    std::string session_name;
     std::vector<process_t> processes;
 
     std::string log_dir;

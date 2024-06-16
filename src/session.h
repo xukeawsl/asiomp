@@ -1,17 +1,17 @@
 #pragma once
 
-#include "asiomp.h"
+#include "common.h"
 
 class session
   : public std::enable_shared_from_this<session>
 {
 public:
-    session(asio::ip::tcp::socket socket);
+    explicit session(asio::ip::tcp::socket socket);
 
-    ~session();
+    virtual ~session() = default;
 
-    void start();
+    virtual void start();
 
-private:
+protected:
     asio::ip::tcp::socket socket_;
 };
