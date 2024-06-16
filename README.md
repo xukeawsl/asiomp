@@ -22,36 +22,65 @@ asiomp 能够帮助你构建基于 c++ asio 的多进程 tcp 服务器
 
 ## 使用
 
-### 1. 克隆源代码
+### 1. 作为子模块引入项目
 
 ```bash
-git clone --recurse-submodules https://github.com/xukeawsl/asiomp.git
+# 对于一个新项目
+git init
+mkdir third-party
+
+# 添加子模块
+git submodule add https://github.com/xukeawsl/asiomp.git third-party/asiomp
+
+# 递归拉取所有子模块代码
+git submodule update --init --recursive
 ```
 
-### 2. 添加业务代码
+### 2. 在 CMakeLists 中添加子目录并链接动态库
 
-* 为 `session` 类添加具体处理代码
+```cmake
+add_subdirectory(third-party/asiomp)
 
-```cpp
-#include "session.h"
-
-session::session(asio::ip::tcp::socket socket) : socket_(std::move(socket)) {}
-
-session::~session() {}
-
-void session::start() {
-    // add your code
-}
+target_link_libraries(${PROJECT_NAME} PUBLIC asiomp)
 ```
 
-* 根据需求配置监听地址和工作进程数, 修改 `main.cpp` 中的参数即可
+### 3. 添加业务代码
+
+* 继承 `session` 类并实现其 `start` 方法
 
 ```cpp
 #include "asiomp.h"
 
+class your_session : public session {
+public:
+    explicit your_session(asio::ip::tcp::socket socket) : session(std::move(socket)) {
+        // 其它初始化操作
+    }
+};
+```
+
+* 将自己实现的会话类注册到会话工厂中, 需要提供一个会话生成器, 最后在创建服务器时提供会话名称即可
+
+```cpp
+#include "asiomp.h"
+#include "your_session.h"
+
+std::shared_ptr<session> your_session_creator(asio::ip::tcp::socket socket) {
+    auto sptr = std::make_shared<your_session>(std::move(socket));
+    return std::dynamic_pointer_cast<session>(sptr);
+}
+
+/* asiomp 参数解释
+   param1: argv 用于修改运行后的进程名称, 可以使用 cmake -DPROC_NAME=your_proc_name 设置
+   param2: 服务器监听的 ip 地址, 支持 IPv6
+   param3: 服务器监听端口
+   param4: worker 进程个数, 如果为 0 则取 CPU 核心数(单进程模式无这个参数)
+   param5: 是否作为守护进程运行
+   param6: 会话名称(如果对应会话没有注册, 则使用默认会话)
+*/
 int main(int argc, char *argv[]) {
-    // asiomp_server(argv, "127.0.0.1", 5555, false).run();    // 单进程模式
-    asiomp_server(argv, "127.0.0.1", 5555, 2, true).run();    // 多进程模式
+    session_factory::getInstance()->register_session("your_session", your_session_creator);
+    asiomp_server(argv, "127.0.0.1", 80, 2, false, "your_session").run();
     return 0;
 }
 ```
@@ -68,9 +97,12 @@ cmake -DCMAKE_BUILD_TYPE=Release ..
 # Debug 构建使用 Debug 级别
 cmake -DLOG_LEVEL=Trace ..
 
+# 可以在构建时调整可执行文件运行后的名称, 默认是 asiomp
+cmake -DPROC_NAME=echo_server ..
+
 # 编译二进制可执行文件
 cmake --build .
 
-# 运行 asiomp
-./asiomp
+# 假如你的可执行文件名是 echo
+./echo
 ```
