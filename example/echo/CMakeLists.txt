@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.10)
 project(echo_server)
 
 include_directories(
-    ../../src
+    ../../include
     ../../third-party/asio/asio/include
 )
 
