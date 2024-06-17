@@ -23,7 +23,8 @@ static char* cpystrn(char* dst, const char* src, size_t n) {
 }
 
 asiomp_server::asiomp_server(char** argv, const std::string& host,
-                             uint16_t port, bool daemon, const std::string& name)
+                             uint16_t port, bool daemon,
+                             const std::string& name)
     : os_argv(argv),
       os_argv_last(argv[0]),
       io_context(1),
@@ -34,12 +35,11 @@ asiomp_server::asiomp_server(char** argv, const std::string& host,
       isworker(false),
       terminate(false),
       isdaemon(daemon),
-      session_name(name)
-{
-}
+      session_name(name) {}
 
 asiomp_server::asiomp_server(char** argv, const std::string& host,
-                             uint16_t port, uint32_t worker_num, bool daemon, const std::string& name)
+                             uint16_t port, uint32_t worker_num, bool daemon,
+                             const std::string& name)
     : os_argv(argv),
       os_argv_last(argv[0]),
       io_context(1),
@@ -51,8 +51,7 @@ asiomp_server::asiomp_server(char** argv, const std::string& host,
       terminate(false),
       isdaemon(daemon),
       session_name(name),
-      processes(worker_num)
-{
+      processes(worker_num) {
     if (worker_num == 0) {
         processes.resize(std::thread::hardware_concurrency());
     }
@@ -338,7 +337,9 @@ void asiomp_server::handle_accept() {
     this->acceptor.async_accept(
         [this](asio::error_code ec, asio::ip::tcp::socket socket) {
             if (!ec) {
-                session_factory::getInstance()->create_session(session_name, std::move(socket))->start();
+                session_factory::getInstance()
+                    ->create_session(session_name, std::move(socket))
+                    ->start();
             } else {
                 SPDLOG_WARN("failed to accept : {}", ec.value());
             }
