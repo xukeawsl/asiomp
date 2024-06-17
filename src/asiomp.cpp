@@ -64,13 +64,30 @@ void asiomp_server::run() noexcept {
         this->init();
 
         if (this->single_mode) {
+            SPDLOG_INFO("{} start, listening on [{}]:{}", ASIOMP_PROC_NAME,
+                        this->listen_endpoint.address().to_string(),
+                        this->listen_endpoint.port());
+
+            SPDLOG_INFO("work mode : single process");
+
             this->worker_process();
         } else {
             this->spawn_process();
+
+            SPDLOG_INFO("{} start, listening on [{}]:{}", ASIOMP_PROC_NAME,
+                        this->listen_endpoint.address().to_string(),
+                        this->listen_endpoint.port());
+
+            SPDLOG_INFO("work mode : multi process({})",
+                        this->processes.size());
+
             this->io_context.run();
         }
+
+        SPDLOG_INFO("{} stop", ASIOMP_PROC_NAME);
     } catch (std::exception& e) {
-        SPDLOG_ERROR("asiomp server failed to run : {}", std::string(e.what()));
+        SPDLOG_ERROR("{} failed to run : {}", ASIOMP_PROC_NAME,
+                     std::string(e.what()));
     }
 }
 
@@ -220,7 +237,7 @@ void asiomp_server::set_logger(const std::string& logger_name) {
         spdlog::set_default_logger(file_logger);
     }
 
-    spdlog::set_pattern("[%Y-%m-%d %T.%f] [thread %t] [%^%l%$] %v");
+    spdlog::set_pattern("[%Y-%m-%d %T.%f] [thread %t] [%^%l%$] [%s:%#] %v");
 
     switch (SPDLOG_ACTIVE_LEVEL) {
         case SPDLOG_LEVEL_TRACE:
