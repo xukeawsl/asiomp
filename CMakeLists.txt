@@ -21,7 +21,7 @@ file(GLOB_RECURSE hrds ${PROJECT_SOURCE_DIR}/src/*.h)
 add_library(${PROJECT_NAME} SHARED ${srcs})
 
 target_include_directories(${PROJECT_NAME} PUBLIC
-    src
+    ./include
     third-party/asio/asio/include
 )
 
@@ -32,3 +32,13 @@ if (PROC_NAME)
         ASIOMP_PROC_NAME="${PROC_NAME}"
     )
 endif()
+
+include(GNUInstallDirs)
+
+install(TARGETS ${PROJECT_NAME}
+    LIBRARY
+        DESTINATION lib
+)
+
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/ DESTINATION include/${PROJECT_NAME})
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/third-party/asio/asio/include/ DESTINATION include/${PROJECT_NAME})
