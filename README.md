@@ -104,7 +104,7 @@ int main(int argc, char *argv[]) {
 }
 ```
 
-### 3. 构建运行
+### 4. 构建运行
 
 ```bash
 mkdir build && cd build
@@ -124,4 +124,20 @@ cmake --build .
 
 # 假如你的可执行文件名是 echo
 ./echo
+```
+
+### 5. 安装
+
+```cmake
+# 安装 asiomp 以及依赖的 spdlog、asio
+# 如果不需要安装 spdlog 则不设置 SDPLOG_INSTALL 选项即可
+cmake -DSPDLOG_INSTALL=ON ..
+
+# 安装到默认路径
+cmake --install .
+
+# 安装到指定目录开头的路径
+cmake --install . --prefix /usr/local/test
+
+# 安装完之后注意一下头文件路径和库文件路径是否能在环境变量中找到, 否则需要再添加一下环境变量
 ```
