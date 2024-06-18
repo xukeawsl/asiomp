@@ -1,8 +1,7 @@
 #include "echo_session.h"
 
-echo_session::echo_session(asio::ip::tcp::socket socket) : socket_(std::move(socket)) {}
-
-echo_session::~echo_session() {}
+echo_session::echo_session(asio::ip::tcp::socket socket)
+    : socket_(std::move(socket)) {}
 
 void echo_session::start() { do_read(); }
 

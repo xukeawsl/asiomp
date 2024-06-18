@@ -2,13 +2,9 @@
 
 #include "asiomp.h"
 
-class echo_session
-  : public session
-{
+class echo_session : public session {
 public:
     explicit echo_session(asio::ip::tcp::socket socket);
-
-    ~echo_session();
 
     void start() override;
 
