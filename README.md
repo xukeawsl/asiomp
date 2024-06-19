@@ -49,7 +49,7 @@ git submodule update --init --recursive
 ```cmake
 add_subdirectory(third-party/asiomp)
 
-target_link_libraries(${PROJECT_NAME} PUBLIC asiomp)
+target_link_libraries(${PROJECT_NAME} PUBLIC asiomp pthread spdlog::spdlog)
 ```
 
 ### 3. 添加业务代码
