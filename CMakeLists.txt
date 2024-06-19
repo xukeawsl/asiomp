@@ -4,9 +4,11 @@ project(asiomp)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE TRUE)
 
-if(NOT CMAKE_BUILD_TYPE)
+if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "Choose Release or Debug" FORCE)
 endif()
+
+option(SPDLOG_INSTALL "Generate the install target" ON)
 
 set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g -ggdb -Wall")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -Wno-unused")

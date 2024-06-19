@@ -137,10 +137,6 @@ cmake --build .
 ### 5. 安装
 
 ```cmake
-# 安装 asiomp 以及依赖的 spdlog、asio
-# 如果不需要安装 spdlog 则不设置 SDPLOG_INSTALL 选项即可
-cmake -DSPDLOG_INSTALL=ON ..
-
 # 安装到默认路径
 cmake --install .
 
