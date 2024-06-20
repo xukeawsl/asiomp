@@ -146,6 +146,8 @@ int main(int argc, char* argv[]) {
     try {
         asio::io_context io_context;
 
+        std::remove("/tmp/chat_room");
+
         chat_center center(io_context, "/tmp/chat_room");
 
         io_context.run();
