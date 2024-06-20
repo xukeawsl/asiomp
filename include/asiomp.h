@@ -17,6 +17,14 @@ public:
 
     void run() noexcept;
 
+    template <class T>
+    static void register_session(const std::string& session_name) {
+        session_factory::getInstance()->register_session(session_name,
+            [](asio::ip::tcp::socket socket) -> std::shared_ptr<session> {
+                return std::dynamic_pointer_cast<session>(std::make_shared<T>(std::move(socket)));
+            });
+    }
+
 protected:
     struct process_t {
         pid_t pid;

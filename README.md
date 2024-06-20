@@ -86,16 +86,11 @@ private:
 };
 ```
 
-* 将自己实现的会话类注册到会话工厂中, 需要提供一个会话生成器, 最后在创建服务器时提供会话名称即可
+* 将自己实现的会话类注册到会话工厂中并为其设置一个名称, 使用 `asiomp_server` 的静态模板方法即可
 
 ```cpp
 #include "asiomp.h"
 #include "your_session.h"
-
-std::shared_ptr<session> your_session_creator(asio::ip::tcp::socket socket) {
-    auto sptr = std::make_shared<your_session>(std::move(socket));
-    return std::dynamic_pointer_cast<session>(sptr);
-}
 
 /* asiomp 参数解释
    param1: argv 用于修改运行后的进程名称, 可以使用 cmake -DPROC_NAME=your_proc_name 设置
@@ -106,7 +101,7 @@ std::shared_ptr<session> your_session_creator(asio::ip::tcp::socket socket) {
    param6: 会话名称(如果对应会话没有注册, 则使用默认会话)
 */
 int main(int argc, char *argv[]) {
-    session_factory::getInstance()->register_session("your_session", your_session_creator);
+    asiomp_server::register_session<your_session>("your_session");
     asiomp_server(argv, "127.0.0.1", 80, 2, false, "your_session").run();
     return 0;
 }
